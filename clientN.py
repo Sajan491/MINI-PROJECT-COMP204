@@ -36,5 +36,3 @@ while connected:
         print(f"{currentWD}{data1}")
         print(output_str)
 
-
-# GUI

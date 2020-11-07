@@ -19,9 +19,8 @@ def create_socket():
     except:
         print("error creating socket")
 
+
 # Binding the socket and listening for connections
-
-
 def bind_socket():
     try:
         global s

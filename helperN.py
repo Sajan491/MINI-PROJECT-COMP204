@@ -65,4 +65,3 @@ while True:
             print('sent')
             response = str(client_socket.recv(20480), "utf-8")
             print(response, end="")
-
