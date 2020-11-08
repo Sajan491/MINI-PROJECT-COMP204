@@ -21,6 +21,7 @@ client_socket.setblocking(True)
 name=username.encode('utf-8')
 name_header= f"{len(name):<{HEADER_LENGTH}}".encode('utf-8')
 client_socket.send(name_header+name)
+print("Enter list to list available connections:")
 
 while True:
     # message=input(f"{username} >")
@@ -54,6 +55,8 @@ while True:
     # except Exception as e:
     #     print('General error',str(e))
     #     sys.exit()
+    
+
         cmd = input()
         if cmd == 'workdone':
             client_socket.send(str.encode(cmd))
@@ -66,4 +69,5 @@ while True:
             print('sent')
             response = str(client_socket.recv(20480), "utf-8")
             print(response, end="")
+
 

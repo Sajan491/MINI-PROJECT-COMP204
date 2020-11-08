@@ -58,12 +58,11 @@ while True:
             message=notified_socket.recv(2048)
 
                 
-            if message is False:
+            if message[:8].decode('utf-8') == 'workdone':
                 print(f"Closed connection from {clients[notified_socket]['data'].decode('utf-8')}")
                 sockets_list.remove(notified_socket)
                 del clients[notified_socket]
                 continue
-
             if message[:4].decode('utf-8') == "list":
                 result="Select Client from below list:"+"\n"
                 for i,a in enumerate(address):
@@ -81,7 +80,6 @@ while True:
                 notified_socket.send(notification.encode("utf-8"))                
             else:
                 user = clients[notified_socket]
-                print("might be error")
                 #print(f"Received message from {user['data'].decode('utf-8')}")
                 # for client_socket in clients:
                 #     if client_socket != notified_socket:
