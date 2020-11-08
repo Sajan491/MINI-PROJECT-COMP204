@@ -7,6 +7,7 @@ PORT = 5054
 
 
 username=input("Username:")
+username=username+'-client'
 s=socket.socket()
 s.connect((HOST,PORT))
 
