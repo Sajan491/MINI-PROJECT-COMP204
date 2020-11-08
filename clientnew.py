@@ -12,17 +12,26 @@ while connected:
 
     data = s.recv(1024)
 
-    if data.decode("utf-8") == 'download':
+    if data.decode("utf-8") == 'getfile':
         filename = s.recv(1024)
         f = open(filename, 'rb')
-        filesize = os.path.getsize(filename)
-
         i = f.read(1024)
         while(i):
             s.send(i)
             i = f.read(1024)
         f.close()
         s.send(str.encode("complete"))
+
+    if data.decode("utf-8") == 'sendfile':
+        filename = s.recv(1024)
+        f = open(filename, 'wb')
+        i = s.recv(1024)
+        while not ("complete" in str(i)):
+            f.write(i)
+            i = s.recv(1024)
+        f.close()
+        print("Transfer Complete")
+        continue
 
     if data[:8].decode("utf-8") == 'workdone':
         connected = False

@@ -97,7 +97,7 @@ def send_commands(conn):
     while True:
         try:
             cmd = input()
-            if cmd == 'download':
+            if cmd == 'getfile':
                 conn.send(str.encode(cmd))
                 filename = input("filename>")
                 conn.send(str.encode(filename))
@@ -108,6 +108,19 @@ def send_commands(conn):
                     i = conn.recv(1024)
                 f.close()
                 print("Transfer Complete")
+                continue
+
+            if cmd == 'sendfile':
+                conn.send(str.encode(cmd))
+                filename = input("filename>")
+                conn.send(str.encode(filename))
+                f = open(filename, 'rb')
+                i = f.read(1024)
+                while(i):
+                    conn.send(i)
+                    i = f.read(1024)
+                f.close()
+                conn.send(str.encode("complete"))
                 continue
 
             if cmd == 'workdone':
