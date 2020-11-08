@@ -23,6 +23,8 @@ clients={}
 address=[]
 name=[]
 
+#prints welcome statement every time the server is run.
+print(f"\nThe server has been successfully activated at the port {PORT}. \n Waiting for connections...")
 
 def received_code(client_socket):
     try:
@@ -65,7 +67,7 @@ while True:
             if user['data'].decode('utf-8')[-6:]=="helper":
                 helper_socket.append(client_socket)
                 target_socket.append(client_socket)
-            print(f"Accepted new connection form {client_address[0]}:{client_address[1]} username {user['data'].decode('utf-8')}")
+            print(f"\nAccepted new connection from {client_address[0]}:{client_address[1]} with username {user['data'].decode('utf-8')}")
 
         else:
             s=0
@@ -82,7 +84,7 @@ while True:
                 del clients[notified_socket]
                 continue
             if message[:4].decode('utf-8') == "list":
-                result="Select Client from below list:"+"\n"
+                result="Select a client from the list below using 'select [client_no]':"+"\n"
                 available()
                 for i,a in enumerate(address):
                     if name[i][-6:]=="client":
@@ -101,7 +103,7 @@ while True:
                 notification="Select a Client. Enter 'list' to view all the clients in the server."+"\n"
                 notified_socket.send(notification.encode('utf-8'))
             elif message[:3].decode('utf-8') == "The":
-                print("terminated")
+                print("Connection terminated!")
                 # target_socket.close()
                 j=0
                 for sockets in socket_list:
@@ -113,7 +115,7 @@ while True:
                 socket_list.remove(target_socket[s])
                 del clients[target_socket[s]]
                 helper_socket[s].send(message)
-                print('sent')
+                print('Command sent!')
                 switch[s]=True
             elif message[:4].decode('utf-8') == "done":
                 j=0
