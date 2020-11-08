@@ -77,7 +77,7 @@ while True:
                 target=target.replace(" ",'')
                 target=int(target)
                 target_soc=sockets_list[target+1]
-                notification="Selected:"+"\n"+address[target][0]+" "+address[target][1]+" "+name[target]+">"
+                notification="Selected:"+"\n"+str(address[target][0])+" "+str(address[target][1])+" "+name[target]+">"
                 notified_socket.send(notification.encode("utf-8"))                
             else:
                 user = clients[notified_socket]
