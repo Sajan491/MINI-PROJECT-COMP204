@@ -18,6 +18,7 @@ global helper_soc
 switch=True
 
 sockets_list=[server_socket]
+socket_list=[]
 clients={}
 address=[]
 name=[]
@@ -48,7 +49,7 @@ while True:
                 continue
 
             sockets_list.append(client_socket)
-
+            socket_list.append(client_socket)
             clients[client_socket]=user
             address.append(client_address)
             name.append(user['data'].decode('utf=8'))
@@ -76,37 +77,36 @@ while True:
                 target=cmd.replace('select ','')    
                 target=target.replace(" ",'')
                 target=int(target)
-                target_soc=sockets_list[target+1]
+                target_soc=socket_list[target]
                 notification="Selected:"+"\n"+str(address[target][0])+" "+str(address[target][1])+" "+name[target]+">"
                 notified_socket.send(notification.encode("utf-8"))                
             elif helper_soc==target_soc:
                 notification="Select a Client. Enter 'list' to view all the clients in the server."+"\n"
                 notified_socket.send(notification.encode('utf-8'))
-            elif message[:8].decode('utf-8') == "workdone":
-                # for a,n in zip(address,name):
-                #     print(str(a)+str(n)+"\n")
-                j=0
-                for sockets in sockets_list:
-                    if sockets == target_soc:
-                        del address[j-1]
-                        del name[j-1]
-                    j+=1
-                target_soc.send(message)
-                switch=False
             elif message[:3].decode('utf-8') == "The":
+                print("terminated")
                 # target_soc.close()
+                j=0
+                for sockets in socket_list:
+                    if sockets == target_soc:
+                        address.pop(j)
+                        name.pop(j)
+                    j+=1
                 sockets_list.remove(target_soc)
+                socket_list.remove(target_soc)
                 del clients[target_soc]
                 helper_soc.send(message)
+                print('sent')
                 switch=True
             elif message[:4].decode('utf-8') == "done":
                 j=0
-                for sockets in sockets_list:
+                for sockets in socket_list:
                     if sockets == helper_soc:
-                        del address[j-1]
-                        del name[j-1]
+                        address.pop(j)
+                        name.pop(j)
                     j+=1
-                    sockets_list.remove(helper_soc)
+                sockets_list.remove(helper_soc)
+                socket_list.remove(helper_soc)
                 del clients[helper_soc]
             else:
                 user = clients[notified_socket]
