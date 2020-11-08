@@ -42,7 +42,7 @@ def received_code(client_socket):
 def available():
     for i,s in enumerate(socket_list):
         if name[i][-6:]=="client":
-            for soc in target_socket:
+            for soc in socket_list:
                 if s != soc:
                     selected[i]="not"
                 else:
