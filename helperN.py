@@ -60,13 +60,10 @@ while True:
         cmd = input()
         if cmd == 'workdone':
             client_socket.send(str.encode(cmd))
-            client_socket.close()
-            break
         if cmd == 'quitclient':
             break
         if len(str.encode(cmd)) > 0:
             client_socket.send(str.encode(cmd))
-            print('sent')
             response = str(client_socket.recv(20480), "utf-8")
             print(response, end="")
 

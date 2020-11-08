@@ -52,13 +52,16 @@ while True:
             clients[client_socket]=user
             address.append(client_address)
             name.append(user['data'].decode('utf=8'))
+            if user['data'].decode('utf-8')[-6:]=="helper":
+                helper_soc=client_socket
+                target_soc=client_socket
             print(f"Accepted new connection form {client_address[0]}:{client_address[1]} username {user['data'].decode('utf-8')}")
 
         else:
             message=notified_socket.recv(2048)
 
                 
-            if message[:8].decode('utf-8') == 'workdone':
+            if message is False:
                 print(f"Closed connection from {clients[notified_socket]['data'].decode('utf-8')}")
                 sockets_list.remove(notified_socket)
                 del clients[notified_socket]
@@ -67,8 +70,6 @@ while True:
                 result="Select Client from below list:"+"\n"
                 for i,a in enumerate(address):
                     result+=str(i)+" "+str(address[i][0])+" "+str(address[i][1])+" "+name[i]+"\n"
-                    if name[i][-6:]=="helper":
-                        helper_soc=sockets_list[i+1]
                 notified_socket.send(result.encode('utf-8'))
             elif message[:6].decode('utf-8') == "select":
                 cmd=message.decode('utf-8')
@@ -78,6 +79,26 @@ while True:
                 target_soc=sockets_list[target+1]
                 notification="Selected:"+"\n"+str(address[target][0])+" "+str(address[target][1])+" "+name[target]+">"
                 notified_socket.send(notification.encode("utf-8"))                
+            elif helper_soc==target_soc:
+                notification="Select a Client. Enter 'list' to view all the clients in the server."+"\n"
+                notified_socket.send(notification.encode('utf-8'))
+            elif message[:8].decode('utf-8') == "workdone":
+                # for a,n in zip(address,name):
+                #     print(str(a)+str(n)+"\n")
+                j=0
+                for sockets in sockets_list:
+                    if sockets == target_soc:
+                        del address[j-1]
+                        del name[j-1]
+                    j+=1
+                target_soc.send(message)
+                switch=False
+            elif message[:3].decode('utf-8') == "The":
+                # target_soc.close()
+                sockets_list.remove(target_soc)
+                del clients[target_soc]
+                helper_soc.send(message)
+                switch=True
             else:
                 user = clients[notified_socket]
                 #print(f"Received message from {user['data'].decode('utf-8')}")

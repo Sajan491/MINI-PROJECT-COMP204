@@ -18,6 +18,7 @@ while connected:
     data = s.recv(1024)
     if data[:8].decode("utf-8") == 'workdone':
         connected = False
+        s.send(str.encode("The connection has been terminated."+"\n"))
         print("The connection has been terminated.")
         break
 
