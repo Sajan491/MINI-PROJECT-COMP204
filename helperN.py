@@ -13,6 +13,7 @@ PORT = 5054
 queue = Queue()
 
 username=input("Username:")
+username=username+"-helper"
 client_socket=socket.socket()
 client_socket.connect((HOST,PORT))
 client_socket.setblocking(True)
@@ -65,3 +66,4 @@ while True:
             print('sent')
             response = str(client_socket.recv(20480), "utf-8")
             print(response, end="")
+

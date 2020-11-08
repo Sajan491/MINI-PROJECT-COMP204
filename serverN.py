@@ -13,46 +13,15 @@ server_socket = socket.socket()
 server_socket.bind((HOST,PORT))
 
 server_socket.listen()
+global target_soc
+global helper_soc
+switch=True
 
 sockets_list=[server_socket]
 clients={}
+address=[]
+name=[]
 
-# Accepting Client Connections
-def accept_client_connections():
-    for c in all_connections:
-        c.close()
-    del all_connections[:]
-    del all_address[:]
-
-    while True:
-        try:
-            connection, address = server_socket.accept()
-            server_socket.setblocking(1)  # prevents timeout
-            all_connections.append(connection)
-            all_address.append(address)
-            print(
-                f"Connection has been established with : {address[0]} at the port {address[1]}")
-            print("Enter 'list' to show all available connections.")
-            cmd = input("You>")
-            if cmd == 'list':
-                list_connections()
-
-        except:
-            print("Error creating connections")
-
-#To list the connected clients/helpers
-def list_connections():
-    results = ''
-    try:
-        for i, c in enumerate(all_connections):
-            c.send(str.encode(' '))
-            c.recv(2048)
-            results = str(
-                i) + "   " + str(all_address[i][0]) + "   " + str(all_address[i][1]) + "\n"
-
-        print(f"----Available Connections---- + '\n' {results}")
-    except:
-        print("No connections available")
 
 def received_code(client_socket):
     try:
@@ -67,15 +36,13 @@ def received_code(client_socket):
     except:
         return False
 
-print(f"Server successfully started at the port {PORT}. \n Accepting new connections.......")
-
-
 while True:
     read_sockets, _, exception_sockets=select.select(sockets_list,[],sockets_list)
 
     for notified_socket in read_sockets:
         if notified_socket == server_socket:
             client_socket,client_address=server_socket.accept()
+
             user=received_code(client_socket)
             if user is False:
                 continue
@@ -83,42 +50,49 @@ while True:
             sockets_list.append(client_socket)
 
             clients[client_socket]=user
-
-            print(f"Accepted new connection form {client_address[0]}:{client_address[1]} with Username {user['data'].decode('utf-8')}")
-
+            address.append(client_address)
+            name.append(user['data'].decode('utf=8'))
+            print(f"Accepted new connection form {client_address[0]}:{client_address[1]} username {user['data'].decode('utf-8')}")
 
         else:
             message=notified_socket.recv(2048)
 
+                
             if message is False:
                 print(f"Closed connection from {clients[notified_socket]['data'].decode('utf-8')}")
                 sockets_list.remove(notified_socket)
                 del clients[notified_socket]
                 continue
 
-            user = clients[notified_socket]
-            #print(f"Received message from {user['data'].decode('utf-8')}")
-            for client_socket in clients:
-                if client_socket != notified_socket:
-                    client_socket.send(message)
-
-
+            if message[:4].decode('utf-8') == "list":
+                result="Select Client from below list:"+"\n"
+                for i,a in enumerate(address):
+                    result+=str(i)+" "+str(address[i][0])+" "+str(address[i][1])+" "+name[i]+"\n"
+                    if name[i][-6:]=="helper":
+                        helper_soc=sockets_list[i+1]
+                notified_socket.send(result.encode('utf-8'))
+            elif message[:6].decode('utf-8') == "select":
+                cmd=message.decode('utf-8')
+                target=cmd.replace('select ','')    
+                target=target.replace(" ",'')
+                target=int(target)
+                target_soc=sockets_list[target+1]
+                notification="Selected:"+"\n"+address[target][0]+" "+address[target][1]+" "+name[target]+">"
+                notified_socket.send(notification.encode("utf-8"))                
+            else:
+                user = clients[notified_socket]
+                print("might be error")
+                #print(f"Received message from {user['data'].decode('utf-8')}")
+                # for client_socket in clients:
+                #     if client_socket != notified_socket:
+                #         client_socket.send(message)
+                if switch:
+                    target_soc.send(message)
+                    switch=False
+                else:
+                    helper_soc.send(message)
+                    switch=True
 
     for notified_socket in exception_sockets:
         sockets_list.remove(notified_socket)
         del clients[notified_socket]
-
-def start():
-    active = True
-    while active:
-        global s
-        cmd = input("You>")
-        if cmd == 'closeserver':
-            for c in all_connections:
-                c.send(str.encode('workdone'))
-        elif cmd == 'list':
-            list_connections()
-        else:
-            print("Enter 'list' to list all connections availabele.")
-
-start();
