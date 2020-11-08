@@ -99,6 +99,15 @@ while True:
                 del clients[target_soc]
                 helper_soc.send(message)
                 switch=True
+            elif message[:4].decode('utf-8') == "done":
+                j=0
+                for sockets in sockets_list:
+                    if sockets == helper_soc:
+                        del address[j-1]
+                        del name[j-1]
+                    j+=1
+                    sockets_list.remove(helper_soc)
+                del clients[helper_soc]
             else:
                 user = clients[notified_socket]
                 #print(f"Received message from {user['data'].decode('utf-8')}")

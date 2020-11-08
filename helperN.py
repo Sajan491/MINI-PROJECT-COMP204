@@ -22,8 +22,8 @@ name=username.encode('utf-8')
 name_header= f"{len(name):<{HEADER_LENGTH}}".encode('utf-8')
 client_socket.send(name_header+name)
 print("Enter list to list available connections:")
-
-while True:
+connection=True
+while connection:
     # message=input(f"{username} >")
 
     # if message:
@@ -60,7 +60,10 @@ while True:
         cmd = input()
         if cmd == 'workdone':
             client_socket.send(str.encode(cmd))
-        if cmd == 'quitclient':
+        if cmd == 'done':
+            client_socket.send(str.encode(cmd))
+            connection=False
+            print("The service has been disconnected.\n")
             break
         if len(str.encode(cmd)) > 0:
             client_socket.send(str.encode(cmd))
