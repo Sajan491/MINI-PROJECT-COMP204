@@ -58,8 +58,6 @@ while connection:
     
 
         cmd = input()
-        if cmd == 'workdone':
-            client_socket.send(str.encode(cmd))
         if cmd == 'done':
             client_socket.send(str.encode(cmd))
             connection=False
