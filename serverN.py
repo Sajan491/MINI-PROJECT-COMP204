@@ -102,12 +102,12 @@ while True:
             elif helper_socket[s]==target_socket[s]:
                 notification="Select a Client. Enter 'list' to view all the clients in the server."+"\n"
                 notified_socket.send(notification.encode('utf-8'))
-            elif message[:3].decode('utf-8') == "The":
-                print("Connection terminated!")
+            elif message[:10].decode('utf-8') == "Connection":
                 # target_socket.close()
                 j=0
                 for sockets in socket_list:
                     if sockets == target_socket[s]:
+                        print("Connection terminated with {0} {1} {2}!".format(str(address[j][0]),str(address[j][1]),name[j]))
                         address.pop(j)
                         name.pop(j)
                     j+=1
