@@ -72,7 +72,7 @@ while True:
         else:
             s=0
             soc=0
-            message=notified_socket.recv(2048)
+            message=notified_socket.recv(20480)
             for helper_soc,target_soc in zip(helper_socket,target_socket):
                 if notified_socket==helper_soc or notified_socket==target_soc:
                     s=soc
